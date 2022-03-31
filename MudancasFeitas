@@ -1,0 +1,90 @@
+	
+	
+############################ PASSOS PARA CRIAR UM PROJETO EMBEDDED-MAS ##############################
+
+
+
+	#1 - Criar um projeto (gradle/ jacamo) com todas as blibliotecas e dependências
+		https://github.com/jacamo-lang/jacamo/blob/master/doc/install.adoc#gradle
+		
+	#2 - Definir as ações que o agente é capaz de realizar
+		#2.1 - Definição das ações interna
+	 	#2.2 - Definição das atuações*
+	 	
+	#3 - Definições das crenças que o agent é capaz de perceber
+	
+	#4 - ??
+
+
+
+#1 -------------------------------------------------------------------------------------------------
+	Adaptações feitas do peception_aciton_4 -> CarExample
+		# Mudanças de nomeclatura para arquivos gradlew:
+			* perception_action.jcm	->	car_example.jcm
+			* architecture_1		->	car_example
+			
+		# Arquivos de configuração alterados
+			- build.gradle
+			- car_example.jcm
+			- settings.gradle
+	
+#2 --------------------------------------------------------------------------------------------------
+	Nos projetos embedded-mas estamos interessados em ações que impactam o ambiente físico. Essas ações são realizadas por atuadores que são controlados pelo(s) microcontrolador(es) (arduino, esp32). As ações são definidas em alto nivel na camada Java e o controle dos atuadores que irão realizar a ação é feito no código do microcontolador (em C++ no caso do arduino). 
+	 Exemplo: Digamos que um agente seja um carro com dois motores e queremos que nosso agente tenha a ação de se mover para frente. Sabemos que para se mover para frente o agente deve acionar os dois motores com a mesma força e girando no sentido horário. Assim, a ação "andar_para_frente" é definida no código Java enquanto que o controle da força e sentido de rotação dos motores é especificado no código do microcontrolador.
+	 Portanto o processo de elaborar um ação realizavél para o agente é feito em duas etapas
+	 	#2.1 - Definição da ação interna
+	 	#2.2 - Definição das atuações* disponiveis (Especificação da ação ineterna)
+	 	
+	*Atuações são aquilo que o microcontrolador é capaz de fazer com base nos atuadores que ele esta controlando. Acionar um motor, ligar um led, tocar um bip são alguns exemplo de atuações. Uma ação interna é composta de uma ou mais atuações.
+	 	
+	 #2.1 _______________________________________________________________________________________
+	 	Para definir as ações que o agente é capaz de realizar é necessário escrever 3 arquivos (iaLib, EmbeddedAgent, Device):
+	 	
+	 	Essencialmente as definições de ações dos projetos embedded-mas apenas enviam uma ( ou mais) menssagem(ens) para o(s) microcontrolador(res), especificando qual acao o agente quer realizar. O envio da mensagem, atraves da porta serial, é feito pelos Devices (códigos Java que representam abstrações dos microccontroladores). Os Devices são chamados pelo EmbeddedAgent (código Java que representa nosso agente embarcado). Nesta abstração, especificamos diversas açoes que o agente pode realizar. Essas açoes saõ chamadas pelo codigo Jason(.asl) do nosso agente. A ponte entre o código Jason e o EmbeddedAgente é justamente a biblioteca de acoes internas iaLib (internal action Library).
+	 	
+	 	Caminho da chamada de uma ação:
+	 	1 - Código do agente
+	 	2 - Internal action da pasta iaLib
+	 	3 - Método do EmbeddedAgent 
+	 	4 - Métodos dos devices (representações dos microcontroladores)
+	 	5 - Código dos microcontoladores (definem as atuações que o microcontolador pode realizar)
+	 		 	
+	 	
+	 	Todo esse trabalho para se definir uma ação feito desta forma para permitir as vantagens da arquitetura:
+	 	i - alto nivel no código do agente
+	 	ii - é possivel realizar açoes que evolvam dois microcontroladores diferentes: 
+	 		Voltando ao exemplo do carro: imagine que cada um dos dois motores é controlado por um controlador diferente. Nocódigo do EmbeddedAgente poderiamos expecificar qual dos microcontroladores vamos usar ou usar os dois "ao mesmo tempo" para reealizar uma ação. (para ir para frente precisamos acionar os dois motores juntos)
+	 	
+	 	
+	 	
+	 	#2.1.1 - Criar a pasta iaLib (internal action Library) *******************************
+	 	 A pasta iaLib amazena as definições de todas as ações internas que o agente é capaz de realiar. Todos os seus arquivos tem um formato padrão (ver "default_internal_action.java") com o nome "nome_da_ação.java" e extendem a classe DefaultInternalAction, nativa do Jason.
+	 	 
+	 	 Os arquivos das ações internas da pasta iaLib apenas chamam as ações que estão descritas no código do agente embarcado, atráves destas linhas de comando:
+	 	 ((DemoEmbeddedAgent)ts.getAg()).defaultInternalAction();
+	 	 return true;
+	 	 
+	 	Por padrão, as definições das açoes da iaLib e que estão definidas no próprio agente recebem o mesmo nome e são escrits em "camelCase"
+	 	
+	 	#2.1.2 - Definir as ações internas no EmbeddedAgent **********************************
+	 	 Aqui definimos quais microcontroladores  e suas respesctivas funcionaidades (atuações) a nossa ação interna usará.
+	 	 Voltando ao exemplo do carro, a função interna "ir para frente" poderia utilizar dois motores que estao sendo controladors pelo "MotorDevice" e um led de moninotaramento que esta sendo controlado pelo "lightDevice" para que, quando o método "ir para frente" for acionado os microcontroladores acionem seus respsctivos atuadores.
+	 	 
+	 	 #2.1.3 - Definir as atuações nos Devices ********************************************
+	 	 Os Devices são representações lógics dos microcontroladores. Definir as atuações significa passar para o código Java todas as formas que o microcontrolador tem de atuar no ambiente (ligar led, acionar motor, acionar bip e etc).
+	 	 Isso é feito simplesmente escrevendo na porta serial a ação que voce seseja realizar.
+	 	 
+	 
+	  #2.2 _____________________________________________________________________________________
+	 	Definimos as atuações que o microcontrolador é capaz de realizar dentro do seu proprio código. Acionamos essas atuações sempre que o microcontolador receber pela serial o nome especifico da atuação (definidos nos itens 2.1.2 e 2.1.3)
+	 
+	 
+#3 ------------------------------------------------------------------------------------------------	 
+	 
+	 
+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	 
+	 
+	 
+	 
+	 
+	 
