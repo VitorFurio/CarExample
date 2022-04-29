@@ -32,7 +32,7 @@ float distanciaEsq = 0;
 float distanciaDir = 0;
 
 
-//Classe para facilitar o uso da ponte H L298N na manipulação dos motores na função Setup e Loop.
+///Classe para facilitar o uso da ponte H L298N na manipulação dos motores na função Setup e Loop.
 class DCMotor {
     int spd = 255, pin1, pin2;
   public:
@@ -42,18 +42,18 @@ class DCMotor {
       pinMode(pin1, OUTPUT);
       pinMode(pin2, OUTPUT);
     }
-    void Speed(int in1) { // Speed é o método que irá ser responsável por salvar a velocidade de atuação do motor
+    void Velocidade(int in1) { // Speed é o método que irá ser responsável por salvar a velocidade de atuação do motor
       spd = in1;
     }
-    void Forward() { // Forward é o método para fazer o motor girar para frente
+    void Horario() { //faz o motor girar para frente
       analogWrite(pin1, spd);
       digitalWrite(pin2, LOW);
     }
-    void Backward() { // Backward é o método para fazer o motor girar para trás
+    void Antihorario() { //faz o motor girar para trás
       digitalWrite(pin1, LOW);
       analogWrite(pin2, spd);
     }
-    void Stop() { // Stop é o metodo para fazer o motor ficar parado.
+    void Para() { //faz o motor ficar parado.
       digitalWrite(pin1, LOW);
       digitalWrite(pin2, LOW);
     }
@@ -66,8 +66,8 @@ void setup() {
   MotorEsq.Pinout(IN_1, IN_2);
   MotorDir.Pinout(IN_3, IN_4);
 
-  MotorEsq.Speed(200); // A velocidade do motor pode variar de 0 a 255, onde 255 é a velocidade máxima.
-  MotorDir.Speed(200);
+  MotorEsq.Velocidade(255); // A velocidade do motor pode variar de 0 a 255, onde 255 é a velocidade máxima.
+  MotorDir.Velocidade(255);
 
   pinMode(LIGHT, OUTPUT);
   digitalWrite(LIGHT, 1); //light starts off
@@ -81,13 +81,13 @@ void loop()
 {
   //Acoes do arduino
   if(distanciaFrente<10){
-    MotorEsq.Backward(); // Comando para o carro girar para esquerda
-    MotorDir.Forward();
+    MotorEsq.Horario(); // Comando para o carro girar para esquerda
+    MotorDir.Antihorario();
     carState = "esquerda";
   }
   if(distanciaFrente>=10){
-    MotorEsq.Forward(); // Comando para o carrro ir para frente
-    MotorDir.Forward();
+    MotorEsq.Horario(); // Comando para o carrro ir para frente
+    MotorDir.Horario();
     carState = "frente";
   }
 

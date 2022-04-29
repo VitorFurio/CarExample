@@ -43,18 +43,18 @@ class DCMotor {
       pinMode(pin1, OUTPUT);
       pinMode(pin2, OUTPUT);
     }
-    void Speed(int in1) { // Speed é o método que irá ser responsável por salvar a velocidade de atuação do motor
+    void Velocidade(int in1) { // Speed é o método que irá ser responsável por salvar a velocidade de atuação do motor
       spd = in1;
     }
-    void Forward() { // Forward é o método para fazer o motor girar para frente
+    void Horario() { //faz o motor girar para frente
       analogWrite(pin1, spd);
       digitalWrite(pin2, LOW);
     }
-    void Backward() { // Backward é o método para fazer o motor girar para trás
+    void Antihorario() { //faz o motor girar para trás
       digitalWrite(pin1, LOW);
       analogWrite(pin2, spd);
     }
-    void Stop() { // Stop é o metodo para fazer o motor ficar parado.
+    void Para() { //faz o motor ficar parado.
       digitalWrite(pin1, LOW);
       digitalWrite(pin2, LOW);
     }
@@ -68,8 +68,8 @@ void setup() {
   MotorEsq.Pinout(IN_1, IN_2);
   MotorDir.Pinout(IN_3, IN_4);
 
-  MotorEsq.Speed(200); // A velocidade do motor pode variar de 0 a 255, onde 255 é a velocidade máxima.
-  MotorDir.Speed(200);
+  MotorEsq.Velocidade(255); // A velocidade do motor pode variar de 0 a 255, onde 255 é a velocidade máxima.
+  MotorDir.Velocidade(255);
 
   pinMode(LIGHT, OUTPUT);
   digitalWrite(LIGHT, 1); //light starts off
@@ -83,34 +83,37 @@ void loop()
 {
   //Açoes-----------------------------------------------------------------------------------------------------------
   while (Serial.available() > 0) { //check whether there is some information from the serial (possibly from the agent)
-    String s = Serial.readString();
-
-    if (s.equals("lightOn")) { //if the agent sends "light_on", then switch the light on
-      digitalWrite(LIGHT, 1);
-      lightState = 1;
-    }
-
-    if (s.equals("lightOff")) {
-      digitalWrite(LIGHT, 0);
-      lightState = 0;
-    }
-
-    if (s.equals("forward")) {
-      MotorEsq.Forward(); // Comando para o carrro ir para frente
-      MotorDir.Forward();
-      carState = "frente";
-    }
-
-    if (s.equals("backward")) {
-      MotorEsq.Backward(); // Comando para o carro ir para trás
-      MotorDir.Backward();
-      carState = "tras";
-    }
-
-    if (s.equals("stop")) {
-      MotorEsq.Stop(); // Comando para o carro parar
-      MotorDir.Stop();
-      carState = "parado";
+    char c = Serial.read();
+    switch (c) {
+      case 'f':
+          MotorEsq.Horario(); // Comando para o carrro ir para frente
+          MotorDir.Horario();
+          carState = "frente";
+        break;
+      case 't':
+          MotorEsq.Antihorario(); // Comando para o carro ir para trás
+          MotorDir.Antihorario();
+          carState = "tras";
+        break;
+        
+      case 'p':
+          MotorEsq.Para(); // Comando para o carro parar
+          MotorDir.Para();
+          carState = "parado";
+        break;
+      case 'e':
+          MotorEsq.Horario(); // Comando para o carrro ir para frente
+          MotorDir.Antihorario();
+          carState = "esquerda";
+        break;
+      case 'd':
+          MotorEsq.Antihorario(); // Comando para o carrro ir para frente
+          MotorDir.Horario();
+          carState = "direita";
+        break;  
+      default:
+        // comando(s)
+        break;
     }
   }
 
@@ -119,13 +122,13 @@ void loop()
   distanciaEsq = sensorEsq.Ranging(CM);
   distanciaDir = sensorDir.Ranging(CM);
 
-  com.startBelief("distanceFrente");
+  com.startBelief("distanciaFrente");
   com.beliefAdd(distanciaFrente);
   com.endBelief();
-  com.startBelief("distanciaEsq");
+  com.startBelief("distanciaEsquerda");
   com.beliefAdd(distanciaEsq);
   com.endBelief();
-  com.startBelief("distanceDir");
+  com.startBelief("distanciaDireita");
   com.beliefAdd(distanciaDir);
   com.endBelief();
 

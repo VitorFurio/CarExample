@@ -30,7 +30,7 @@ public class MyDemoDevice extends JSONWatcherDevice {
 		if(actionName.equals("lightOn")) 
 			return doLightOn();
 		else 
-                   return false;
+            return false;
 	}
 	
 	public boolean doLightOn() {
@@ -41,8 +41,6 @@ public class MyDemoDevice extends JSONWatcherDevice {
 		this.microcontroller.write("light_off");
 		return true;
 	}
-	
-	
 	public boolean doActuator1On() {
 		this.microcontroller.write("A");
 		return true;
@@ -57,6 +55,27 @@ public class MyDemoDevice extends JSONWatcherDevice {
 	}
 	public boolean doActuator2Off(){
 		this.microcontroller.write("D");
+		return true;
+	}
+
+	public boolean frente(){
+		this.microcontroller.write("f");
+		return true;
+	}
+	public boolean tras(){
+		this.microcontroller.write("t");
+		return true;
+	}
+	public boolean esquerda(){
+		this.microcontroller.write("e");
+		return true;
+	}
+	public boolean direita(){
+		this.microcontroller.write("d");
+		return true;
+	}
+	public boolean para(){
+		this.microcontroller.write("p");
 		return true;
 	}
 
