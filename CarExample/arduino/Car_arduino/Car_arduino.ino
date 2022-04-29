@@ -1,3 +1,4 @@
+
 //pinos de controle do motor 1(IN1 e IN2)  motor 2 (IN3 e IN4)
 const int IN_1 = 4;
 const int IN_2 = 5;
@@ -13,7 +14,6 @@ const int TRIG_ESQ = 11;
 const int ECHO_FRENTE = 8;
 const int TRIG_FRENTE = 9;
 
-
 const int LIGHT = 13;
 
 #include<Embedded_Protocol_2.h> // biblioteca para envio de crenças
@@ -26,11 +26,10 @@ Ultrasonic sensorDir(TRIG_DIR, ECHO_DIR);
 
 // Crenças
 int lightState = 0;
-String carState = "parado";
+String carState = "forward";
 float distanciaFrente = 0;
 float distanciaEsq = 0;
 float distanciaDir = 0;
-
 
 
 //Classe para facilitar o uso da ponte H L298N na manipulação dos motores na função Setup e Loop.
@@ -63,7 +62,6 @@ class DCMotor {
 DCMotor MotorEsq, MotorDir;
 
 
-
 void setup() {
   MotorEsq.Pinout(IN_1, IN_2);
   MotorDir.Pinout(IN_3, IN_4);
@@ -75,43 +73,22 @@ void setup() {
   digitalWrite(LIGHT, 1); //light starts off
   Serial.begin(9600);
 
-  delay(5000); //wait 5 seconds (to set up the multi-agent system)
+  delay(1000); //wait 30 seconds (to set up the multi-agent system)
 }
 
 
 void loop()
 {
-  //Açoes-----------------------------------------------------------------------------------------------------------
-  while (Serial.available() > 0) { //check whether there is some information from the serial (possibly from the agent)
-    String s = Serial.readString();
-
-    if (s.equals("lightOn")) { //if the agent sends "light_on", then switch the light on
-      digitalWrite(LIGHT, 1);
-      lightState = 1;
-    }
-
-    if (s.equals("lightOff")) {
-      digitalWrite(LIGHT, 0);
-      lightState = 0;
-    }
-
-    if (s.equals("forward")) {
-      MotorEsq.Forward(); // Comando para o carrro ir para frente
-      MotorDir.Forward();
-      carState = "frente";
-    }
-
-    if (s.equals("backward")) {
-      MotorEsq.Backward(); // Comando para o carro ir para trás
-      MotorDir.Backward();
-      carState = "tras";
-    }
-
-    if (s.equals("stop")) {
-      MotorEsq.Stop(); // Comando para o carro parar
-      MotorDir.Stop();
-      carState = "parado";
-    }
+  //Acoes do arduino
+  if(distanciaFrente<10){
+    MotorEsq.Backward(); // Comando para o carro girar para esquerda
+    MotorDir.Forward();
+    carState = "esquerda";
+  }
+  if(distanciaFrente>=10){
+    MotorEsq.Forward(); // Comando para o carrro ir para frente
+    MotorDir.Forward();
+    carState = "frente";
   }
 
   //Crenças----------------------------------------------------------------------------------------------------------
@@ -119,6 +96,11 @@ void loop()
   distanciaEsq = sensorEsq.Ranging(CM);
   distanciaDir = sensorDir.Ranging(CM);
 
+
+  if(distanciaFrente < 30)
+  {
+    carState="stop";
+  }
   com.startBelief("distanceFrente");
   com.beliefAdd(distanciaFrente);
   com.endBelief();
@@ -138,5 +120,5 @@ void loop()
   com.endBelief();
 
   com.sendMessage();
-  delay(2000);
+  //delay(10);
 }
