@@ -7,6 +7,9 @@ started.
 +!move : distanciaFrente(X) & X<10
 <-  iaLib.tras;
     !move.
+//+!move : distanciaDireita(Y) & Y>100
+//<-  iaLib.direita;
+//    !move.
 +!move : distanciaFrente(X) & X>10
 <-  iaLib.frente;
     !move.

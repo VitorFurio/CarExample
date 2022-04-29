@@ -25,59 +25,29 @@ public class MyDemoDevice extends JSONWatcherDevice {
 		super(id, microcontroller);
 	}
 
-	@Override
-	public boolean execEmbeddedAction(String actionName, Object[] args) {
-		if(actionName.equals("lightOn")) 
-			return doLightOn();
-		else 
-            return false;
-	}
-	
-	public boolean doLightOn() {
-		this.microcontroller.write("light_on");
-		return true;
-	}
-	public boolean doLightOff() {
-		this.microcontroller.write("light_off");
-		return true;
-	}
-	public boolean doActuator1On() {
+	// # atuacoes
+	public boolean doMotor1Horario() {
 		this.microcontroller.write("A");
 		return true;
 	}
-	public boolean doActuator1Off() {
+	public boolean doMotor1Antihorario() {
 		this.microcontroller.write("B");
 		return true;
 	}
-	public boolean doActuator2On(){
+	public boolean doMotor1Para(){
 		this.microcontroller.write("C");
 		return true;
 	}
-	public boolean doActuator2Off(){
+	public boolean doMotor2Horario() {
 		this.microcontroller.write("D");
 		return true;
 	}
-
-	public boolean frente(){
-		this.microcontroller.write("f");
+	public boolean doMotor2Antihorario() {
+		this.microcontroller.write("E");
 		return true;
 	}
-	public boolean tras(){
-		this.microcontroller.write("t");
+	public boolean doMotor2Para(){
+		this.microcontroller.write("F");
 		return true;
 	}
-	public boolean esquerda(){
-		this.microcontroller.write("e");
-		return true;
-	}
-	public boolean direita(){
-		this.microcontroller.write("d");
-		return true;
-	}
-	public boolean para(){
-		this.microcontroller.write("p");
-		return true;
-	}
-
-	
 }

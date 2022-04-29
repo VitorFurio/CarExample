@@ -60,22 +60,22 @@ class DCMotor {
     }
 };
 
-DCMotor MotorEsq, MotorDir;
+DCMotor Motor1, Motor2;
 
 
 
 void setup() {
-  MotorEsq.Pinout(IN_1, IN_2);
-  MotorDir.Pinout(IN_3, IN_4);
+  Motor1.Pinout(IN_1, IN_2);
+  Motor2.Pinout(IN_3, IN_4);
 
-  MotorEsq.Velocidade(255); // A velocidade do motor pode variar de 0 a 255, onde 255 é a velocidade máxima.
-  MotorDir.Velocidade(255);
+  Motor1.Velocidade(255); // A velocidade do motor pode variar de 0 a 255, onde 255 é a velocidade máxima.
+  Motor2.Velocidade(255);
 
   pinMode(LIGHT, OUTPUT);
   digitalWrite(LIGHT, 1); //light starts off
   Serial.begin(9600);
 
-  delay(5000); //wait 5 seconds (to set up the multi-agent system)
+  delay(3000); //wait 5 seconds (to set up the multi-agent system)
 }
 
 
@@ -85,36 +85,29 @@ void loop()
   while (Serial.available() > 0) { //check whether there is some information from the serial (possibly from the agent)
     char c = Serial.read();
     switch (c) {
-      case 'f':
-          MotorEsq.Horario(); // Comando para o carrro ir para frente
-          MotorDir.Horario();
-          carState = "frente";
+      case 'A':
+          Motor1.Horario(); // Comando para o carrro ir para frente
         break;
-      case 't':
-          MotorEsq.Antihorario(); // Comando para o carro ir para trás
-          MotorDir.Antihorario();
-          carState = "tras";
+      case 'B':
+          Motor1.Antihorario(); // Comando para o carro ir para trás
         break;
-        
-      case 'p':
-          MotorEsq.Para(); // Comando para o carro parar
-          MotorDir.Para();
-          carState = "parado";
+      case 'C':
+          Motor1.Para(); // Comando para o carro parar
         break;
-      case 'e':
-          MotorEsq.Horario(); // Comando para o carrro ir para frente
-          MotorDir.Antihorario();
-          carState = "esquerda";
+      case 'D':
+          Motor2.Horario(); // Comando para o carrro ir para frente
         break;
-      case 'd':
-          MotorEsq.Antihorario(); // Comando para o carrro ir para frente
-          MotorDir.Horario();
-          carState = "direita";
-        break;  
+      case 'E':
+          Motor2.Antihorario(); // Comando para o carrro ir para frente
+        break;
+      case 'F':
+          Motor2.Para(); // Comando para o carrro ir para frente
+        break;    
       default:
         // comando(s)
         break;
     }
+    
   }
 
   //Crenças----------------------------------------------------------------------------------------------------------
@@ -141,5 +134,5 @@ void loop()
   com.endBelief();
 
   com.sendMessage();
-  delay(2000);
+  delay(1000);
 }
